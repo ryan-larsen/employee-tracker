@@ -58,16 +58,26 @@ function buildApp () {
 }
 
 function viewDepartments () {
-
+  const query = 'SELECT * FROM department'
+  connection.query(query, function (err, res) {
+    if (err) throw err
+    console.table('Departments', res)
+    buildApp()
+  })
 }
 
 function viewRole () {
-  
+  const query = 'SELECT * FROM role'
+  connection.query(query, function (err, res) {
+    if (err) throw err
+    console.table('Roles: ', res)
+    buildApp()
+  })
 }
 
 function viewEmployee () {
   const query = 'SELECT * FROM employee'
-  connection.query(query, function(err, res) {
+  connection.query(query, function (err, res) {
     if (err) throw err
     console.log('There are ' + res.length + ' Employees found.')
     console.table('Employees', res)
@@ -76,15 +86,79 @@ function viewEmployee () {
 }
 
 function addDepartment () {
-  
+  inquirer
+    .prompt([{
+      name: 'newDept',
+      type: 'input',
+      message: 'What is the name of the new Department you would like to add?'
+    }]).then(function (ans) {
+      connection.query(
+        'INSERT INTO department SET ?', {
+          name: ans.newDept
+        }
+      )
+      const query = 'SELECT * FROM department'
+      connection.query(query, function (err, res) {
+        if (err) throw err
+        console.table('All Departments:', res)
+        buildApp()
+      })
+    })
 }
 
 function addEmployee () {
-  
+  connection.query('SELECT * FROM role', function (err, res) {
+    if (err) throw err
+
+    inquirer
+      .prompt([{
+        name: 'firstName',
+        type: 'input',
+        message: "Employee's fist name: "
+      },
+      {
+        name: 'lastName',
+        type: 'input',
+        message: "Employee's last name: "
+      },
+      {
+        name: 'role',
+        type: 'list',
+        choices: function () {
+          const roleArr = []
+          for (let i = 0; i < res.length; i++) {
+            roleArr.push(res[i].title)
+          }
+          return roleArr
+        },
+        message: 'What is this employee\'s role?'
+      }
+      ]).then(function (ans) {
+        let roleID
+        for (let j = 0; j < res.length; j++) {
+          if (res[j].title === ans.role) {
+            roleID = res[j].id
+            console.log(roleID)
+          }
+        }
+        connection.query(
+          'INSERT INTO employee SET ?', {
+            firstName: ans.first_name,
+            lastName: ans.last_name,
+            roleId: roleID
+          },
+          function (err) {
+            if (err) throw err
+            console.log('Your employee has been added!')
+            buildApp()
+          }
+        )
+      })
+  })
 }
 
 function addRole () {
-  
+
 }
 
 app.listen(port, function () {
