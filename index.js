@@ -34,7 +34,7 @@ function buildApp () {
       'Exit'
     ]
   }).then(function (ans) {
-    switch (answer.action) {
+    switch (ans.action) {
       case 'View Departments':
         viewDepartments()
         break
@@ -52,6 +52,11 @@ function buildApp () {
         break
       case 'Add a new Role':
         addRole()
+        break
+      case 'Exit':
+        closeApp()
+        break
+      default:
         break
     }
   })
@@ -158,7 +163,59 @@ function addEmployee () {
 }
 
 function addRole () {
+  connection.query('SELECT * FROM department', function (err, res) {
+    if (err) throw err
 
+    inquirer
+      .prompt([
+        {
+          name: 'newRole',
+          type: 'input',
+          message: 'What is the title of the new role?'
+        },
+        {
+          name: 'salary',
+          type: 'input',
+          message: 'What is the salary of this position?'
+        },
+        {
+          name: 'deptChoice',
+          type: 'rawlist',
+          choices: function (res) {
+            const deptArr = []
+            for (let i = 0; i < res.length; i++) {
+              deptArr.push(res[i].name)
+            }
+            return deptArr
+          }
+        }
+      ]).then(function (ans) {
+        let deptId
+        for (let j = 0; j < res.length; j++) {
+          if (res[j].name === ans.deptChoice) {
+            deptId = res[j].id
+          }
+        }
+
+        connection.query(
+          'INSERT INTO role SET ?',
+          {
+            title: ans.new_role,
+            salary: ans.salary,
+            department_id: deptId
+          },
+          function (err, res) {
+            if (err) throw err
+            console.log('Successfully created a new role.')
+            buildApp()
+          }
+        )
+      })
+  })
+}
+
+function closeApp () {
+  connection.end()
 }
 
 app.listen(port, function () {
