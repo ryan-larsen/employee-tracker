@@ -1,26 +1,27 @@
- DROP DATABASE IF EXISTS employeeTrackerDB;
- CREATE DATABASE employeeTrackerDB;
+-- DROP DATABASE IF EXISTS employee_DB;
+-- CREATE DATABASE employee_DB;
 
- USE employeeDB;
+-- USE employee_DB;
 
- CREATE TABLE department(
- id INT PRIMARY KEY AUTO_INCREMENT,
- name VARCHAR(30) NOT NULL
- );
+-- CREATE TABLE department(
+-- id INT PRIMARY KEY AUTO_INCREMENT,
+-- name VARCHAR(30) NOT NULL
+-- );
 
- CREATE TABLE role(
- id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
- title VARCHAR (100),
- salary DECIMAL NOT NULL,
- departmentId INT NOT NULL,
- CONSTRAINT fkDepartment FOREIGN KEY (departmentId) REFERENCES department(id)
- );
+-- CREATE TABLE role(
+-- id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+-- title VARCHAR (30),
+-- salary DECIMAL NOT NULL,
+-- department_id INT NOT NULL,
+-- CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id)
+-- );
 
- CREATE TABLE employee(
- id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
- firstName VARCHAR(30) NOT NULL,
- lastName VARCHAR(30) NOT NULL,
- roleId INT NOT NULL,
- CONSTRAINT fkRole FOREIGN KEY (roleId) REFERENCES role(id),
- managerId INT, 
- CONSTRAINT fkManager FOREIGN KEY (managerId) REFERENCES employee(id)
+-- CREATE TABLE employees(
+-- id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+-- first_name VARCHAR(30) NOT NULL,
+-- last_name VARCHAR(30) NOT NULL,
+-- role_id INT NOT NULL,
+-- CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id),
+-- manager_id INT, 
+-- CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employees(id)
+-- );
