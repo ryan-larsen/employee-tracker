@@ -6,7 +6,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: '',
+  password: 'password',
   database: 'employee_DB'
 })
 
@@ -60,7 +60,7 @@ function startApp () {
 }
 
 function viewEmployees () {
-  var query = 'SELECT * FROM employees'
+  const query = 'SELECT * FROM employees'
   connection.query(query, function (err, res) {
     if (err) throw err
     console.log(res.length + ' employees found!')
@@ -70,7 +70,7 @@ function viewEmployees () {
 }
 
 function viewDepartments () {
-  var query = 'SELECT * FROM department'
+  const query = 'SELECT * FROM department'
   connection.query(query, function (err, res) {
     if (err) throw err
     console.table('All Departments:', res)
@@ -79,7 +79,7 @@ function viewDepartments () {
 }
 
 function viewRoles () {
-  var query = 'SELECT * FROM role'
+  const query = 'SELECT * FROM role'
   connection.query(query, function (err, res) {
     if (err) throw err
     console.table('All roles:', res)
@@ -92,38 +92,40 @@ function addEmployee () {
     if (err) throw err
 
     inquirer
-      .prompt([{
-        name: 'first_name',
-        type: 'input',
-        message: "Employee's fist name: "
-      },
-      {
-        name: 'last_name',
-        type: 'input',
-        message: "Employee's last name: "
-      },
-      {
-        name: 'role',
-        type: 'list',
-        choices: function () {
-          var roleArray = []
-          for (let i = 0; i < res.length; i++) {
-            roleArray.push(res[i].title)
-          }
-          return roleArray
+      .prompt([
+        {
+          name: 'first_name',
+          type: 'input',
+          message: "Employee's fist name: "
         },
-        message: "What is this employee's role? "
-      }
+        {
+          name: 'last_name',
+          type: 'input',
+          message: "Employee's last name: "
+        },
+        {
+          name: 'role',
+          type: 'list',
+          choices: function () {
+            const roleArray = []
+            for (let i = 0; i < res.length; i++) {
+              roleArray.push(res[i].title)
+            }
+            return roleArray
+          },
+          message: "What is this employee's role? "
+        }
       ]).then(function (answer) {
         let roleID
         for (let j = 0; j < res.length; j++) {
-          if (res[j].title == answer.role) {
+          if (res[j].title === answer.role) {
             roleID = res[j].id
             console.log(roleID)
           }
         }
         connection.query(
-          'INSERT INTO employees SET ?', {
+          'INSERT INTO employees SET ?',
+          {
             first_name: answer.first_name,
             last_name: answer.last_name,
             role_id: roleID
@@ -140,17 +142,20 @@ function addEmployee () {
 
 function addDepartment () {
   inquirer
-    .prompt([{
-      name: 'new_dept',
-      type: 'input',
-      message: 'What is the new department you would like to add?'
-    }]).then(function (answer) {
+    .prompt([
+      {
+        name: 'new_dept',
+        type: 'input',
+        message: 'What is the new department you would like to add?'
+      }
+    ]).then(function (answer) {
       connection.query(
-        'INSERT INTO department SET ?', {
+        'INSERT INTO department SET ?',
+        {
           name: answer.new_dept
         }
       )
-      var query = 'SELECT * FROM department'
+      const query = 'SELECT * FROM department'
       connection.query(query, function (err, res) {
         if (err) throw err
         console.table('All Departments:', res)
@@ -164,37 +169,39 @@ function addRole () {
     if (err) throw err
 
     inquirer
-      .prompt([{
-        name: 'new_role',
-        type: 'input',
-        message: 'What is the Title of the new role?'
-      },
-      {
-        name: 'salary',
-        type: 'input',
-        message: 'What is the salary of this position? (Enter a number?)'
-      },
-      {
-        name: 'deptChoice',
-        type: 'rawlist',
-        choices: function () {
-          var deptArry = []
-          for (let i = 0; i < res.length; i++) {
-            deptArry.push(res[i].name)
+      .prompt([
+        {
+          name: 'new_role',
+          type: 'input',
+          message: 'What is the Title of the new role?'
+        },
+        {
+          name: 'salary',
+          type: 'input',
+          message: 'What is the salary of this position? (Enter a number?)'
+        },
+        {
+          name: 'deptChoice',
+          type: 'rawlist',
+          choices: function () {
+            const deptArry = []
+            for (let i = 0; i < res.length; i++) {
+              deptArry.push(res[i].name)
+            }
+            return deptArry
           }
-          return deptArry
         }
-      }
       ]).then(function (answer) {
         let deptID
         for (let j = 0; j < res.length; j++) {
-          if (res[j].name == answer.deptChoice) {
+          if (res[j].name === answer.deptChoice) {
             deptID = res[j].id
           }
         }
 
         connection.query(
-          'INSERT INTO role SET ?', {
+          'INSERT INTO role SET ?',
+          {
             title: answer.new_role,
             salary: answer.salary,
             department_id: deptID
